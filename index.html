@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para mi nena </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background-color: #FDFBF7;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3A2A2A;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Envelope Wrapper */
+        .envelope-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+            cursor: pointer;
+            position: relative;
+        }
+
+        /* Envelope */
+        .envelope-container {
+            position: relative;
+            width: 280px;
+            height: 180px;
+            transition: opacity 0.8s ease;
+        }
+
+        .envelope-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #F4EDE4;
+            border: 2px solid #D4C4B0;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-top: 90px solid #D4C4B0;
+            top: 0;
+            left: 0;
+            z-index: 4;
+            transform-origin: top center;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .envelope.opening .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .envelope-seal {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #8B6B61;
+            border-radius: 50%;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #F4EDE4;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Letter */
+        .letter-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 260px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .letter-container.show {
+            opacity: 1;
+            transform: translate(-50%, -60%);
+            pointer-events: all;
+            cursor: pointer;
+        }
+
+        .letter {
+            background: #FFFEF9;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            border: 1px solid #E8DCC8;
+        }
+
+        .letter-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #3A2A2A;
+            margin-bottom: 1.5rem;
+            white-space: pre-line;
+        }
+
+        .letter-signature {
+            text-align: right;
+            font-style: italic;
+            margin-top: 2rem;
+            color: #5A4A4A;
+            font-size: 0.95rem;
+        }
+
+        .click-hint {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.95rem;
+            color: #8B6B61;
+            opacity: 0.7;
+            font-style: italic;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Question Screen */
+        .question-screen {
+            display: none;
+            opacity: 0;
+            text-align: center;
+            padding: 3rem 2rem;
+            transition: opacity 0.8s ease;
+        }
+
+        .question-screen.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .main-question {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 600;
+            color: #3A2A2A;
+            margin-bottom: 3rem;
+            letter-spacing: 1px;
+        }
+
+        .answer-buttons {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+
+        .btn-yes {
+            padding: 1rem 3rem;
+            background: #C4948B;
+            border: none;
+            color: #FFFEF9;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(196, 148, 139, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-yes:hover {
+            background: #A67B73;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(196, 148, 139, 0.4);
+        }
+
+        .btn-no {
+            padding: 1rem 3rem;
+            background: transparent;
+            border: 1.5px solid #8B6B61;
+            color: #8B6B61;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .btn-no:hover {
+            border-color: #A67B73;
+            color: #A67B73;
+        }
+
+        /* Success Screen */
+        .success-screen {
+            display: none;
+            opacity: 0;
+            text-align: center;
+            padding: 3rem 2rem;
+            transition: opacity 0.8s ease;
+        }
+
+        .success-screen.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .success-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #8B6B61;
+            margin-bottom: 1.5rem;
+        }
+
+        .success-message {
+            font-size: 1.3rem;
+            color: #5A4A4A;
+            line-height: 1.8;
+        }
+
+        /* Rose petals */
+        .petal {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #C4948B;
+            border-radius: 50% 0 50% 0;
+            opacity: 0.7;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .envelope-container {
+                width: 240px;
+                height: 150px;
+            }
+
+            .envelope-flap {
+                border-left: 120px solid transparent;
+                border-right: 120px solid transparent;
+                border-top: 75px solid #D4C4B0;
+            }
+
+            .letter-container {
+                width: 220px;
+            }
+
+            .letter {
+                padding: 2rem 1.5rem;
+            }
+
+            .letter-text {
+                font-size: 0.95rem;
+            }
+
+            .main-question {
+                font-size: 2rem;
+            }
+
+            .answer-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .btn-yes,
+            .btn-no {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-question {
+                font-size: 1.6rem;
+            }
+
+            .success-title {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        /* Monkey Photo Container */
+        .monkey-photo {
+            width: 280px;          /* Era 180px */
+            height: 280px;         /* Era 180px */
+            margin: 0 auto 2rem;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #C4948B;
+            box-shadow: 0 8px 25px rgba(196, 148, 139, 0.3);
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .monkey-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-subtitle {
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            color: #8B6B61;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        /* Responsive para la foto */
+        @media (max-width: 768px) {
+            .monkey-photo {
+                width: 220px;
+                height: 2200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .monkey-photo {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .success-subtitle {
+                font-size: 0.95rem;
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Envelope Screen -->
+        <div id="envelopeScreen">
+            <div class="envelope-wrapper">
+                <!-- Envelope Container -->
+                <div class="envelope-container" id="envelopeContainer" onclick="openEnvelope()">
+                    <div class="envelope" id="envelope">
+                        <div class="envelope-back"></div>
+                        <div class="envelope-flap"></div>
+                        <div class="envelope-seal">🤍</div>
+                    </div>
+                </div>
+                
+                <!-- Letter (initially hidden) -->
+                <div class="letter-container" id="letterContainer" onclick="goToQuestion()">
+                    <div class="letter">
+                        <div class="letter-text">
+DannaPao, mi amor:
+
+Mirando atrás, he estado recordando cada una de nuestras dates y lo increíble que la hemos pasado juntos. Pero más allá de los lugares, lo que realmente aprecio es tenerte a mi lado.
+
+Me alegras la vida, ya sea haciendome burla o con tus acciones tan únicas de demostrar cariño. Pero, estamos a punto de vivir una primer fecha juntos y de otra manera y, por eso, guapa..
+                        </div>
+                        <div class="letter-signature">
+                            Con todo mi cariño,<br>
+                            Edric
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="click-hint" id="clickHint">
+                Haz clic en el sobre
+            </div>
+        </div>
+
+        <!-- Question Screen -->
+        <div id="questionScreen" class="question-screen">
+            <div class="main-question">
+                ¿Quieres ser mi Valentiness?
+            </div>
+            
+            <div class="answer-buttons">
+                <button class="btn-yes" onclick="selectYes()">
+                    Sí, obvio guapo
+                </button>
+                <button id="btnNo" class="btn-no">
+                    No feo, lo siento
+                </button>
+            </div>
+        </div>
+
+<!-- Success Screen -->
+        <div id="successScreen" class="success-screen">
+            <!-- Espacio para tu foto del changuito -->
+            <div class="monkey-photo">
+                <img src="monkeys.jpg" alt="🐵" id="monkeyImg">
+            </div>
+            
+            <h1 class="success-title">
+                ¡Obvio sabía que me dirías que sí!
+            </h1>
+            <p class="success-message">
+                Te amo preciosa.
+            </p>
+            
+            <div class="success-subtitle">
+                (Y sí, esos somos tu y yo)
+            </div>
+        </div>
+    </div>
+
+<audio id="bgMusic" loop volume="0.5">
+    <source src="Dueño De Ti.mp3" type="audio/mpeg">
+</audio>
+
+    <script>
+        const envelope = document.getElementById('envelope');
+        const envelopeContainer = document.getElementById('envelopeContainer');
+        const letterContainer = document.getElementById('letterContainer');
+        const clickHint = document.getElementById('clickHint');
+        const btnNo = document.getElementById('btnNo');
+        
+        let envelopeOpened = false;
+        let noAttempts = 0;
+
+        // CLICK 1: Open envelope, show letter, hide envelope
+        function openEnvelope() {
+            if (!envelopeOpened) {
+                envelopeOpened = true;
+                
+                // Animate envelope opening
+                envelope.classList.add('opening');
+                
+                // After 0.5s, show letter and hide envelope
+                setTimeout(() => {
+                    letterContainer.classList.add('show');
+                    envelopeContainer.classList.add('hidden');
+                    clickHint.textContent = 'Haz clic en la carta';
+                    clickHint.style.opacity = '0.7';
+                }, 500);
+            }
+        }
+
+        // CLICK 2: Go to question screen
+        function goToQuestion() {
+            const envelopeScreen = document.getElementById('envelopeScreen');
+            const questionScreen = document.getElementById('questionScreen');
+            
+            // Fade out envelope screen
+            envelopeScreen.style.opacity = '0';
+            envelopeScreen.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(() => {
+                envelopeScreen.style.display = 'none';
+                questionScreen.classList.add('active');
+                setupNoButton();
+            }, 500);
+        }
+
+        function setupNoButton() {
+            btnNo.addEventListener('mouseenter', moveNoButton);
+            btnNo.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                moveNoButton(e);
+            });
+        }
+
+        function moveNoButton(e) {
+            e.preventDefault();
+            noAttempts++;
+            
+            const maxX = window.innerWidth - btnNo.offsetWidth - 40;
+            const maxY = window.innerHeight - btnNo.offsetHeight - 40;
+            
+            const randomX = Math.max(20, Math.random() * maxX);
+            const randomY = Math.max(20, Math.random() * maxY);
+            
+            const speed = Math.max(0.15 - (noAttempts * 0.01), 0.05);
+            
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
+            btnNo.style.transition = `all ${speed}s ease`;
+            
+            if (noAttempts > 15) {
+                btnNo.style.transition = 'all 0.3s ease';
+            }
+        }
+
+function selectYes() {
+            const questionScreen = document.getElementById('questionScreen');
+            const successScreen = document.getElementById('successScreen');
+            const music = document.getElementById('bgMusic');
+            
+            // Reproducir música
+            music.play().catch(err => {
+                console.log('No se pudo reproducir la música:', err);
+            });
+            
+            createPetals();
+            
+            questionScreen.style.opacity = '0';
+            setTimeout(() => {
+                questionScreen.style.display = 'none';
+                successScreen.classList.add('active');
+            }, 500);
+        }
+        function createPetals() {
+            const colors = ['#C4948B', '#A67B73', '#D4A5A5', '#8B6B61'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const petal = document.createElement('div');
+                    petal.className = 'petal';
+                    petal.style.left = Math.random() * window.innerWidth + 'px';
+                    petal.style.top = '-20px';
+                    petal.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    petal.style.width = (Math.random() * 8 + 6) + 'px';
+                    petal.style.height = (Math.random() * 8 + 6) + 'px';
+                    
+                    document.body.appendChild(petal);
+                    
+                    const duration = Math.random() * 3000 + 3000;
+                    const rotation = Math.random() * 360;
+                    const drift = (Math.random() - 0.5) * 200;
+                    
+                    petal.animate([
+                        { 
+                            transform: 'translateY(0) rotate(0deg) translateX(0)',
+                            opacity: 1
+                        },
+                        { 
+                            transform: `translateY(${window.innerHeight + 50}px) rotate(${rotation}deg) translateX(${drift}px)`,
+                            opacity: 0
+                        }
+                    ], {
+                        duration: duration,
+                        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                    }).onfinish = () => petal.remove();
+                }, i * 100);
+            }
+        }
+
+        function addFloatingHearts() {
+            if (document.getElementById('successScreen').classList.contains('active')) {
+                const heart = document.createElement('div');
+                heart.textContent = '♥';
+                heart.style.position = 'fixed';
+                heart.style.left = Math.random() * window.innerWidth + 'px';
+                heart.style.top = window.innerHeight + 'px';
+                heart.style.fontSize = '1rem';
+                heart.style.color = '#C4948B';
+                heart.style.opacity = '0.6';
+                heart.style.pointerEvents = 'none';
+                heart.style.zIndex = '9999';
+                
+                document.body.appendChild(heart);
+                
+                heart.animate([
+                    { transform: 'translateY(0)', opacity: 0.6 },
+                    { transform: 'translateY(-100vh)', opacity: 0 }
+                ], {
+                    duration: 4000,
+                    easing: 'ease-out'
+                }).onfinish = () => heart.remove();
+            }
+        }
+
+        setInterval(addFloatingHearts, 800);
+    </script>
+</body>
+</html>
